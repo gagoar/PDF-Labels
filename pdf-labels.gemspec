@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors = ['Rob Kaufman']
   s.email = ['rgkaufman@gmail.com']
   s.summary = 'Easy label creation in Ruby through PDF::Writer and using templates from gLabels. Contains the library pdf_labels, the Rails engine LabelPageEngine and an example application FileClerk.'
-  s.description = %q{ 
+  s.description = %q{
 Welcome to the PDF-Labels project.  Our aim is to make creating labels
 programmatically easy in Ruby.  This Library builds on top of
 "PDF::Writer":http://ruby-pdf.rubyforge.org/ and uses the templates
@@ -26,4 +26,7 @@ nor on Gnome)
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+
+  s.add_dependency "pdf-writer"
+
 end
