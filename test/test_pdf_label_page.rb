@@ -18,7 +18,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     assert p
     assert_equal p.template.name, "Avery  5366"
   end
-  
+
   def test_new_with_paper_type
     p = Pdf::Label::Batch.new("Avery  5366", {:paper => 'Legal'})
     assert p
@@ -31,9 +31,9 @@ class TestPdfLabelBatch < Test::Unit::TestCase
       p = Pdf::Label::Batch.new("Some Non-Existing")
     }
   end
-  
+
   #TODO other options are possible for pdf_options, we need to test those at some point
-  
+
   def test_PdfLabelBatch_load_tempalte_set
     Pdf::Label::Batch.load_template_set("#{ROOT}/templates/avery-iso-templates.xml")
      #Avery   7160 is found in avery-iso-templates
@@ -43,7 +43,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
      assert_equal p.pdf.page_height, 841.89
      Pdf::Label::Batch.load_template_set("#{ROOT}/templates/avery-us-templates.xml")
    end
-   
+
    def test_PdfLabelBatch_all_template_names
      #what happens if we havn't loaded a template yet?
      t = Pdf::Label::Batch.all_template_names
@@ -52,7 +52,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
      assert_equal t.size, 291
      assert_equal t[0], "Avery  3274.1"
    end
-     
+
 
   def test_add_label_3_by_10
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
@@ -72,9 +72,9 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     p.add_label(:position => 8, :text => "This was added last and has a small font", :font_size => 8, :offset_y => -40)
     p.draw_boxes(false, true)
     #TODO Anybody out there think of a better way to test this?
-    p.save_as("#{ROOT}/test_add_label_output.pdf")
+    p.save_as("#{Rails.root}/test_add_label_output.pdf")
   end
-  
+
   def test_add_label_3_by_10_multi_page
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
     p.draw_boxes(false, true)
@@ -90,7 +90,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     #TODO Anybody out there think of a better way to test this?
     p.save_as("#{ROOT}/test_add_multi_page.pdf")
   end
-    
+
   def test_multipage_2
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
     p.draw_boxes(false, true)
@@ -99,7 +99,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     end
     p.save_as("#{ROOT}/test_add_multi_page2.pdf")
   end
-  
+
   def test_add_many_labels
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
     #without positoin, so start at 1
@@ -107,33 +107,33 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     p.add_many_labels(:text => "Hellow four more times, starting at 15", :count => 4, :position => 15)
     p.save_as("#{ROOT}/test_add_many_label_output.pdf")
   end
-  
+
   def test_draw_boxes
     p = Pdf::Label::Batch.new("Avery  5366") # label is 2 x 10
     p.draw_boxes
     p.save_as("#{ROOT}/test_draw_boxes_output.pdf")
   end
-  
+
   def test_font_path
     font_path = "#{ROOT}/fonts"
     assert PDF::Writer::FontMetrics::METRICS_PATH.include?(font_path)
     assert PDF::Writer::FONT_PATH.include?(font_path)
   end
-  
+
   def test_set_and_get_barcode_font
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
     assert_equal "Code3de9.afm", p.barcode_font
-    
+
     assert p.barcode_font = "CodeDatamatrix.afm"
     assert_equal "CodeDatamatrix.afm", p.barcode_font
-    
+
     assert_raise(RuntimeError) do
       p.barcode_font = "CodeBob"
     end
     assert_equal "CodeDatamatrix.afm", p.barcode_font
-    
+
   end
-  
+
   def test_add_barcode_label
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 2
     i = 0
@@ -167,7 +167,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
 
   def test_label_information_no_crash
     Pdf::Label::Batch.all_templates.each do |t|
-      t.nx 
+      t.nx
       t.ny
       t.find_description
     end
