@@ -7,7 +7,7 @@ require 'pdf/writer'
 module Pdf
   module Label
     class Batch
-      DEFAULTS = { justification: :left, font_size: 12 }
+      DEFAULTS = { justification: :left, font_size: 12, font_type: 'Helvetica' }
       attr_accessor :template, :label, :pdf, :barcode_font, :manual_new_page
       attr_reader :labels_per_page
 
@@ -81,11 +81,17 @@ module Pdf
 =end
 
       def add_label(text, options = {})
-        label_x, label_y, label_width = setup_add_label_options(options)
-        opts = setup(label_x, label_width, options)
+        unless options.delete(:skip)
+          p 'getting in'
+          label_x, label_y, label_width = setup_add_label_options(options)
+          opts = setup(label_x, label_width, options)
+          @pdf.y = label_y
+        end
+        opts ||= options
         p opts.inspect
-        @pdf.y = label_y
+        @pdf.select_font options[:font_type] if options[:font_type]
         @pdf.text(text, opts)
+        opts
       end
 
 =begin rdoc
@@ -110,14 +116,22 @@ module Pdf
       end
 
 =begin rdoc
-    we need something handy to write several lines into a single label, so we provide an array with hashs inside, each hash must contain a text and
+    we needed something handy to write several lines into a single label, so we provide an array with hashes inside, each hash must contain a [:text] key and
     could contain optional parameters such as :justification, and :font_size if not DEFAULTS options are used.
 =end
       def add_multiline_label(content = [], position = 0)
-        content.each do |options|
-          opts = options.merge({position: position})
+        opts = {}
+        content.each_with_index do |options, i|
+          options = DEFAULTS.merge(options)
+          if i.zero?
+            opts = options
+            opts[:position] = position
+          else
+            opts[:skip] = true
+            opts.merge!(options)
+          end
           text = opts.delete(:text)
-          add_label(text, opts)
+          opts = add_label(text, opts)
         end
       end
 
