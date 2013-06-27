@@ -79,9 +79,6 @@ module Pdf
         text
       end
 
-      def add_font_dir(dir)
-
-      end
 =begin rdoc
       add_label takes an argument hash.
       [:position]  Which label slot to print.  Positions are top to bottom, left to right so position 1 is the label in the top lefthand corner.  Defaults to 0
@@ -94,13 +91,11 @@ module Pdf
 
       def add_label(text, options = {})
         unless options.delete(:skip)
-          p 'getting in'
           label_x, label_y, label_width = setup_add_label_options(options)
           opts = setup(label_x, label_width, options)
           @pdf.y = label_y
         end
         opts ||= options
-        p opts.inspect
         @pdf.select_font options[:font_type] if options[:font_type]
         @pdf.text(text, opts)
         opts
