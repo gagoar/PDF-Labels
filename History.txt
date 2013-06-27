@@ -12,8 +12,17 @@
 
 == 2.0
 
-* 
+*
 
 == 2.0.1 / 2008-08-30
 
 * Label PDFs will not open properly if the PrintScaling attribute is set
+
+== 3.0.0 / 2013-05-27
+
+* removed vendor and added dependencies since xml-mapping and pdf-writer are working properly now.
+* refactor of every method with https://github.com/bbatsov/ruby-style-guide
+* changes on add_label parameters: now its mandatory to send text to build a label [ add_label(text, options) ]
+* added add_multiline_label in order to get multiline labels with different fonts, sizes and alignment
+* added options afm_dir and font_dir to append a new afm/font directory for custom locations
+
