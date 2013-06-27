@@ -23,6 +23,15 @@ module Pdf
         @labels_per_page = [ @layout.nx, @layout.ny ].reduce(:*)
         @zero_based_labels_per_page = @labels_per_page - 1
 
+        # set font_dir if needed
+        if ( font_dir = pdf_opts.delete(:font_dir) ) && ! PDF::Writer::FONT_PATH.include?( font_dir )
+          PDF::Writer::FONT_PATH << font_dir
+        end
+        # set afm_dir if needed
+        if ( afm_dir = pdf_opts.delete(:afm_dir) ) && ! PDF::Writer::FontMetrics::METRICS_PATH.include?( font_dir )
+          PDF::Writer::FontMetrics::METRICS_PATH << afm_dir
+        end
+
         @pdf = PDF::Writer.new(pdf_opts)
         @pdf.margins_pt(0, 0, 0, 0)
 
@@ -70,6 +79,9 @@ module Pdf
         text
       end
 
+      def add_font_dir(dir)
+
+      end
 =begin rdoc
       add_label takes an argument hash.
       [:position]  Which label slot to print.  Positions are top to bottom, left to right so position 1 is the label in the top lefthand corner.  Defaults to 0
