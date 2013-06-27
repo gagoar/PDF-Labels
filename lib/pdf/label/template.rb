@@ -28,11 +28,7 @@ module Pdf
       end
 
       def labels
-        @labels = Hash.new
-        @labels = @labels.merge @labelRectangles
-        @labels = @labels.merge @labelRounds
-        @labels = @labels.merge @labelCDs
-        @labels
+        @labels ||= [ @labelRectangles, @labelRounds, @labelCDs ].reduce(:merge)
       end
 
       def nx
