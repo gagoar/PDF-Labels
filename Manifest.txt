@@ -42,10 +42,3 @@ templates/misc-us-templates.xml
 templates/paper-sizes.xml
 templates/zweckform-iso-templates.xml
 test/test_pdf_label_page.rb
-vendor/xml/LICENSE
-vendor/xml/mapping/base.rb
-vendor/xml/mapping/standard_nodes.rb
-vendor/xml/mapping/version.rb
-vendor/xml/mapping.rb
-vendor/xml/README
-vendor/xml/xxpath.rb
