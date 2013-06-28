@@ -13,6 +13,8 @@ module Pdf
 
       @@gt = nil
       def initialize(template_name, pdf_opts = {})
+        Encoding.default_external = Encoding::UTF_8
+        Encoding.default_internal = Encoding::UTF_8
         raise 'Template not found!' unless @template = gt.find_template(template_name)
         #if the template specifies the paper type, and the user didn't use it.
         pdf_opts[:paper] = @template.size.gsub(/^.*-/,'') if @template.size && !pdf_opts.has_key?(:paper)
@@ -46,7 +48,7 @@ module Pdf
       end
 
       def self.all_template_names
-        gt.find_all_templates
+        gt.all_avaliable_templates
       end
 
       def self.all_templates
@@ -97,6 +99,7 @@ module Pdf
         end
         opts ||= options
         @pdf.select_font options[:font_type] if options[:font_type]
+        text.force_encoding('UTF-8')
         @pdf.text(text, opts)
         opts
       end
@@ -106,12 +109,12 @@ module Pdf
        [:count] - Number of labels to print
 =end
 
-      def add_many_labels(options = {})
+      def add_many_labels(text, options = {})
         if !( options[:x] || options[:y] )
           options[:position] ||= 0
           if options[:count]
             options[:count].times do
-              add_label(options)
+              add_label(text, options)
               options[:position] += 1
             end
           else
