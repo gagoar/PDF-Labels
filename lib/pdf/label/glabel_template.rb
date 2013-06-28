@@ -11,7 +11,7 @@ module Pdf
           @templates = []
           templates.each do |template|
            template = template[1]
-            @templates << template[1].name
+            @templates << template.name
             template.alias.each do |aliases|
               @templates << aliases[1].name
             end
@@ -21,17 +21,12 @@ module Pdf
       end
 
       def find_template(template_name)
-        if template_name != :all
-          if ( template = templates[template_name] )
-            template
-          else
-            templates.each do |template|
-              return template[1] if template[1].alias[template_name]
-            end
-          end
-        else
-          find_all_with_templates
-        end
+        template = templates.find{|k,v| k == template_name || v.alias[template_name]}
+        template[1] if template
+      end
+
+      def all_avaliable_templates
+        templates.values.map(&:name) + templates.values.map(&:alias).map(&:keys).flatten
       end
     end
   end
