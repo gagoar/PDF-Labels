@@ -1,3 +1,4 @@
+# encoding: utf-8
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__) + "/../lib")
 require 'test/unit'
 require '/Users/gagoar/workspace/PDF-Labels/lib/pdf/label'
@@ -57,7 +58,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
 
   def test_add_label_3_by_10
     p = Pdf::Label::Batch.new("Avery 8160") # label is 2 x 10
-    p.add_label("Positoin 15", position: 15) # should add col 2, row 1
+    p.add_label("&*\%Positoin 15", position: 15) # should add col 2, row 1
     #does the use_margin = true work?
     p.add_label('With Margin', use_margin: true, position: 4)
     #with out the margin?
@@ -67,7 +68,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     p.add_label('Centered', position: 26, justification: :center) # should add col 2, row 15
     p.add_label('[Right justified]', justification: :right, position: 28)# col 2, row 14, right justified.
     p.add_label('col 2 row 15', position: 29) # should add col 2, row 15
-    p.add_label('This was added last and has a BIG font', position: 8,  font_size: 16)
+    p.add_label('This was added first and has a BIG font', position: 8,  font_size: 16)
     p.add_label('This was added last and has a small font', position: 8, font_size: 8, offset_y: -40)
     p.draw_boxes(false, true)
     #TODO Anybody out there think of a better way to test this?
@@ -86,6 +87,21 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     p.add_label('This should be first a page 2', position: 30)
     #TODO Anybody out there think of a better way to test this?
     p.save_as("#{ROOT}/test_add_multi_page.pdf")
+  end
+
+  def test_add_labels_with_multiple_lines_align_and_font_types
+    pdf = Pdf::Label::Batch.new('Avery 8160')
+    pdf.draw_boxes(false, false)
+
+    contents = [];
+    contents << {text: 'This',  justification: :center, font_size: 8, font_type: 'Courier'}
+    contents << {text: 'Is a', justification: :right, font_size: 8, font_type: 'Helvetica-BoldOblique'}
+    contents << {text: 'Test', font_type: 'Times-Roman'}
+
+    5.times do |i|
+      pdf.add_multiline_label(contents,i)
+    end
+    pdf.save_as("#{ROOT}/test_add_labels_with_multiple_lines_align_and_font_types.pdf")
   end
 
   def test_multipage_2
@@ -134,17 +150,22 @@ class TestPdfLabelBatch < Test::Unit::TestCase
   def test_add_barcode_label
     p = Pdf::Label::Batch.new("Avery 8160") # label is 2 x 2
     i = 0
-    Pdf::Label::Batch.all_barcode_fonts.keys.each_with_index do |font_name, i|
+    Pdf::Label::Batch.all_barcode_fonts.each_key do |font_name|
       p.barcode_font = font_name
-      p.add_label(font_name.to_s, position: i)
+      text = font_name.to_s.dup
+      p.add_label(text, position: i)
+      i += 1
       p.add_barcode_label(bar_text: "Hello", bar_size: 32, text: "HELLO", position: i)
+      i += 1
+      p.add_barcode_label(text: '*1234567890*', position: i, bar_size: 32)
+      i += 1
     end
     p.save_as("#{ROOT}/test_barcode_output.pdf")
   end
 
   def test_code39
     p = Pdf::Label::Batch.new("Avery 8160") # label is 2 x 2
-    assert_equal "*HELLO123*", p.code39("hellO123")
+    assert_equal '*HELLO123*', p.code39("hellO123")
   end
 
   def test_label_information
