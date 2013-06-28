@@ -4,7 +4,7 @@
 * http://rubyforge.org/projects/pdf-labels/
 
 == DESCRIPTION:
-  
+
 Welcome to the PDF-Labels project.  Our aim is to make creating labels
 programmatically easy in Ruby.  This Library builds on top of
 "PDF::Writer":http://ruby-pdf.rubyforge.org/ and uses the templates
@@ -15,29 +15,44 @@ XML templates from gLabels, we do NOT have a dependancy on gLabels,
 nor on Gnome)
 
 == FEATURES/PROBLEMS:
-  
+
 * Works with all gLabels supported templates for rectangular labels
 * Does not yet work for CD labels (circles)
 
 == SYNOPSIS:
-
     p = PDFLabelPage.new("Avery  8160") # label is 2 x 10
     #Some examples of adding labels
-    p.add_label() # should add to col 1, row 1
-    p.add_label(:position => 1) # should add col 1, row 2
-    p.add_label(:text => "Positoin 15", :position => 15) # should add col 2, row 1
-    p.add_label(:text => 'No Margin', :position => 5, :use_margin => false) #this doesn't use a margin
-    p.add_label(:position => 9, :text => "X Offset = 4, Y Offset = -6", :offset_x => 4, :offset_y => -6)
-    p.add_label(:text => "Centered", :position => 26, :justification => :center) # should add col 2, row 15
-    p.add_label(:text => "[Right justified]", :justification => :right, :position => 28)# col 2, row 14, right justified.
-    p.add_label(:position => 29) # should add col 2, row 15
-    p.add_label(:position => 8, :text => "This was added last and has a BIG font", :font_size => 18)
-
-    #If you want to see the boxes around each label (good for printing alignment samples)
+    p = Pdf::Label::Batch.new("Avery 8160") # label is 2 x 10
+    p.add_label("&*\%Positoin 15", position: 15) # should add col 2, row 1
+    #does the use_margin = true work?
+    p.add_label('With Margin', use_margin: true, position: 4)
+    #with out the margin?
+    p.add_label('No Margin', position: 5, use_margin: false)
+    p.add_label('This is the song that never ends, yes it goes on and on my friends', position: 7 )
+    p.add_label('X Offset = 4, Y Offset = -6', position: 9,  offset_x: 4, offset_y: -6)
+    p.add_label('Centered', position: 26, justification: :center) # should add col 2, row 15
+    p.add_label('[Right justified]', justification: :right, position: 28)# col 2, row 14, right justified.
+    p.add_label('col 2 row 15', position: 29) # should add col 2, row 15
+    p.add_label('This was added first and has a BIG font', position: 8,  font_size: 16)
+    p.add_label('This was added last and has a small font', position: 8, font_size: 8, offset_y: -40)
     p.draw_boxes(false, true)
+    #TODO Anybody out there think of a better way to test this?
+    p.save_as("label_output.pdf")
 
-    #Save your PDF when your done
-    p.save_as("../label_output.pdf")
+  or you could add multiline labels!
+
+    pdf = Pdf::Label::Batch.new('Avery 8160')
+    pdf.draw_boxes(false, false)
+
+    contents = [];
+    contents << {text: 'This',  justification: :center, font_size: 8, font_type: 'Courier'}
+    contents << {text: 'Is a', justification: :right, font_size: 8, font_type: 'Helvetica-BoldOblique'}
+    contents << {text: 'Test', font_type: 'Times-Roman'}
+
+    5.times do |i|
+      pdf.add_multiline_label(contents,i)
+    end
+    pdf.save_as("multiline_label_output.pdf")
 
 == REQUIREMENTS:
 
