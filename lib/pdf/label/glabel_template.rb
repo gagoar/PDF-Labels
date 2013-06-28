@@ -3,34 +3,30 @@ module Pdf
   module Label
     class GlabelsTemplate
       include XML::Mapping
-  
-      hash_node :templates, "Template", "@name", :class => Template, :default_value => Hash.new
-  
-      def find_all_templates
-        return @t unless @t.nil?
-        @t = []
-        templates.each {|t|
-          @t << "#{t[1].name}"
-          t[1].alias.each {|a|
-            @t << "#{a[1].name}"
-          }
-        }
-        return @t
-      end
-        
 
-      def find_template(t_name)
-        return find_all_with_templates if t_name == :all
-        if t = templates[t_name]
-          return t
-        else
-          templates.each { |t|
-            if t[1].alias[t_name]
-              return t[1]
+      hash_node :templates, "Template", "@name", class: Template, default_value: Hash.new
+
+      def find_all_templates
+        unless @templates
+          @templates = []
+          templates.each do |template|
+           template = template[1]
+            @templates << template.name
+            template.alias.each do |aliases|
+              @templates << aliases[1].name
             end
-          }
+          end
         end
-        return nil
+        @templates
+      end
+
+      def find_template(template_name)
+        template = templates.find{|k,v| k == template_name || v.alias[template_name]}
+        template[1] if template
+      end
+
+      def all_avaliable_templates
+        templates.values.map(&:name) + templates.values.map(&:alias).map(&:keys).flatten
       end
 
     end
